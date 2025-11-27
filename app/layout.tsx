@@ -2,12 +2,13 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
-// <CHANGE> Added PWA metadata and viewport for mobile-first experience
+// Added PWA metadata and viewport for mobile-first experience
 export const metadata: Metadata = {
   title: "EnergyPilot - Smart Energy Management",
   description: "Optimize your EV charging, home battery, and PPA based on EPEX day-ahead prices",
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />
+        <Toaster />
       </body>
     </html>
   )

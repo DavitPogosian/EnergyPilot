@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +9,8 @@ import { Play, Zap, ArrowUpCircle, ArrowDownCircle, Home, Power, PowerOff } from
 import { cn } from "@/lib/utils"
 import type { DeviceStatus } from "@/lib/types"
 import { mutate } from "swr"
+import { toast } from "@/hooks/use-toast"
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
 
 interface DeviceCardProps {
   device: DeviceStatus
@@ -16,19 +18,34 @@ interface DeviceCardProps {
 
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<string>(device.status || "")
+
+  useEffect(() => {
+    setSelectedAction(device.status || "")
+  }, [device.status])
 
   const handleAction = async (action: string) => {
     setIsLoading(true)
+    setSelectedAction(action)
     try {
       await fetch(`/api/devices/${device.id}/action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       })
-      // Refresh device data
+      toast({
+        title: "Action Completed",
+        description: `${device.name} is now ${action.replace(/_/g, " ")}`,
+      })
       await mutate("/api/devices")
     } catch (error) {
-      console.error("[v0] Device action failed:", error)
+      console.error("Device action failed:", error)
+      toast({
+        title: "Action Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+      setSelectedAction(device.status || "")
     } finally {
       setIsLoading(false)
     }
@@ -61,12 +78,19 @@ export function DeviceCard({ device }: DeviceCardProps) {
         onClick={() => handleAction("charge_now")}
         disabled={isLoading || !device.isPlugged}
         size="sm"
-        className="gap-2"
+        variant={selectedAction === "charge_now" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "charge_now" && "bg-success hover:bg-success/90 text-white")}
       >
         <Play className="w-4 h-4" />
         Charge
       </Button>
-      <Button onClick={() => handleAction("auto")} disabled={isLoading} size="sm" variant="outline" className="gap-2">
+      <Button
+        onClick={() => handleAction("auto")}
+        disabled={isLoading}
+        size="sm"
+        variant={selectedAction === "auto" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "auto" && "bg-success hover:bg-success/90 text-white")}
+      >
         <Zap className="w-4 h-4" />
         Auto
       </Button>
@@ -75,7 +99,13 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
   const renderBatteryActions = () => (
     <div className="grid grid-cols-2 gap-2 mt-4">
-      <Button onClick={() => handleAction("charge_from_grid")} disabled={isLoading} size="sm" className="gap-2">
+      <Button
+        onClick={() => handleAction("charge_from_grid")}
+        disabled={isLoading}
+        size="sm"
+        variant={selectedAction === "charge_from_grid" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "charge_from_grid" && "bg-success hover:bg-success/90 text-white")}
+      >
         <ArrowDownCircle className="w-4 h-4" />
         Charge
       </Button>
@@ -83,8 +113,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
         onClick={() => handleAction("discharge_to_grid")}
         disabled={isLoading}
         size="sm"
-        variant="outline"
-        className="gap-2"
+        variant={selectedAction === "discharge_to_grid" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "discharge_to_grid" && "bg-success hover:bg-success/90 text-white")}
       >
         <ArrowUpCircle className="w-4 h-4" />
         Discharge
@@ -93,13 +123,19 @@ export function DeviceCard({ device }: DeviceCardProps) {
         onClick={() => handleAction("self_consumption")}
         disabled={isLoading}
         size="sm"
-        variant="outline"
-        className="gap-2"
+        variant={selectedAction === "self_consumption" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "self_consumption" && "bg-success hover:bg-success/90 text-white")}
       >
         <Home className="w-4 h-4" />
         Self Use
       </Button>
-      <Button onClick={() => handleAction("auto")} disabled={isLoading} size="sm" variant="outline" className="gap-2">
+      <Button
+        onClick={() => handleAction("auto")}
+        disabled={isLoading}
+        size="sm"
+        variant={selectedAction === "auto" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "auto" && "bg-success hover:bg-success/90 text-white")}
+      >
         <Zap className="w-4 h-4" />
         Auto
       </Button>
@@ -108,7 +144,13 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
   const renderPPAActions = () => (
     <div className="grid grid-cols-3 gap-2 mt-4">
-      <Button onClick={() => handleAction("turn_on")} disabled={isLoading} size="sm" className="gap-2">
+      <Button
+        onClick={() => handleAction("turn_on")}
+        disabled={isLoading}
+        size="sm"
+        variant={selectedAction === "turn_on" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "turn_on" && "bg-success hover:bg-success/90 text-white")}
+      >
         <Power className="w-4 h-4" />
         On
       </Button>
@@ -116,18 +158,51 @@ export function DeviceCard({ device }: DeviceCardProps) {
         onClick={() => handleAction("turn_off")}
         disabled={isLoading}
         size="sm"
-        variant="outline"
-        className="gap-2"
+        variant={selectedAction === "turn_off" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "turn_off" && "bg-success hover:bg-success/90 text-white")}
       >
         <PowerOff className="w-4 h-4" />
         Off
       </Button>
-      <Button onClick={() => handleAction("auto")} disabled={isLoading} size="sm" variant="outline" className="gap-2">
+      <Button
+        onClick={() => handleAction("auto")}
+        disabled={isLoading}
+        size="sm"
+        variant={selectedAction === "auto" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "auto" && "bg-success hover:bg-success/90 text-white")}
+      >
         <Zap className="w-4 h-4" />
         Auto
       </Button>
     </div>
   )
+
+  const solarForecastData = [
+    { hour: "00:00", output: 0 },
+    { hour: "01:00", output: 0 },
+    { hour: "02:00", output: 0 },
+    { hour: "03:00", output: 0 },
+    { hour: "04:00", output: 0 },
+    { hour: "05:00", output: 0 },
+    { hour: "06:00", output: 0.2 },
+    { hour: "07:00", output: 1.5 },
+    { hour: "08:00", output: 3.8 },
+    { hour: "09:00", output: 6.2 },
+    { hour: "10:00", output: 8.5 },
+    { hour: "11:00", output: 10.2 },
+    { hour: "12:00", output: 11.8 },
+    { hour: "13:00", output: 12.0 },
+    { hour: "14:00", output: 11.5 },
+    { hour: "15:00", output: 10.0 },
+    { hour: "16:00", output: 7.8 },
+    { hour: "17:00", output: 5.2 },
+    { hour: "18:00", output: 2.8 },
+    { hour: "19:00", output: 0.8 },
+    { hour: "20:00", output: 0 },
+    { hour: "21:00", output: 0 },
+    { hour: "22:00", output: 0 },
+    { hour: "23:00", output: 0 },
+  ]
 
   return (
     <Card className={cn(!device.isOnline && "opacity-60")}>
@@ -159,7 +234,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
           </div>
         </div>
 
-        {/* Device-specific info */}
         {device.type === "ev" && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
@@ -207,10 +281,66 @@ export function DeviceCard({ device }: DeviceCardProps) {
         )}
 
         {device.type === "ppa" && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Current Mode</span>
               <span className="font-semibold capitalize">{device.status}</span>
+            </div>
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Today's Solar Forecast</h4>
+              <div className="h-32 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={solarForecastData}>
+                    <defs>
+                      <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis
+                      dataKey="hour"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={5}
+                    />
+                    <YAxis
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `${value}kW`}
+                    />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+                              <div className="grid grid-cols-2 gap-2">
+                                <span className="text-xs text-muted-foreground">{payload[0].payload.hour}</span>
+                                <span className="text-xs font-bold text-warning">{payload[0].value} kW</span>
+                              </div>
+                            </div>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="output"
+                      stroke="hsl(var(--warning))"
+                      fillOpacity={1}
+                      fill="url(#solarGradient)"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                Expected peak: 12.0 kW at 13:00 • Total: 108 kWh
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground text-center">
@@ -220,7 +350,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
           </div>
         )}
 
-        {/* Action buttons */}
         {device.isOnline && (
           <>
             {device.type === "ev" && renderEVActions()}

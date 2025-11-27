@@ -27,7 +27,7 @@ const weeklySavingsData = [
 
 export default function InsightsPage() {
   const handleExportCSV = () => {
-    console.log("[v0] Exporting CSV data")
+    console.log("Exporting CSV data")
   }
 
   return (
@@ -170,11 +170,11 @@ export default function InsightsPage() {
                                     {payload[0].payload.day}
                                   </span>
                                   <div className="flex items-center justify-between gap-4">
-                                    <span className="text-sm text-destructive">Cost:</span>
+                                    <span className="text-sm text-red-500">Cost:</span>
                                     <span className="font-bold">€{payload[0].value}</span>
                                   </div>
                                   <div className="flex items-center justify-between gap-4">
-                                    <span className="text-sm text-success">Income:</span>
+                                    <span className="text-sm text-green-500">Income:</span>
                                     <span className="font-bold">€{payload[1].value}</span>
                                   </div>
                                   <div className="flex items-center justify-between gap-4 pt-2 border-t">
@@ -190,8 +190,8 @@ export default function InsightsPage() {
                           return null
                         }}
                       />
-                      <Bar dataKey="cost" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="income" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="cost" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="income" fill="#22c55e" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>

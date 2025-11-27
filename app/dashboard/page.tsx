@@ -6,12 +6,40 @@ import { Button } from "@/components/ui/button"
 import { BottomNav } from "@/components/bottom-nav"
 import { PriceChart } from "@/components/price-chart"
 import { NegativePriceBanner } from "@/components/negative-price-banner"
-import { TrendingDown, TrendingUp, Battery, Car, Zap, Award } from "lucide-react"
+import { TrendingDown, TrendingUp, Battery, Car, Zap, Award, Sun } from "lucide-react"
 import { cn } from "@/lib/utils"
 import useSWR from "swr"
 import type { PriceData, DailySummary } from "@/lib/types"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
+const solarForecastData = [
+  { hour: "00:00", output: 0 },
+  { hour: "01:00", output: 0 },
+  { hour: "02:00", output: 0 },
+  { hour: "03:00", output: 0 },
+  { hour: "04:00", output: 0 },
+  { hour: "05:00", output: 0 },
+  { hour: "06:00", output: 0.2 },
+  { hour: "07:00", output: 1.5 },
+  { hour: "08:00", output: 3.8 },
+  { hour: "09:00", output: 6.2 },
+  { hour: "10:00", output: 8.5 },
+  { hour: "11:00", output: 9.8 },
+  { hour: "12:00", output: 10.2 },
+  { hour: "13:00", output: 10.0 },
+  { hour: "14:00", output: 9.5 },
+  { hour: "15:00", output: 8.2 },
+  { hour: "16:00", output: 6.5 },
+  { hour: "17:00", output: 4.1 },
+  { hour: "18:00", output: 2.3 },
+  { hour: "19:00", output: 0.8 },
+  { hour: "20:00", output: 0.1 },
+  { hour: "21:00", output: 0 },
+  { hour: "22:00", output: 0 },
+  { hour: "23:00", output: 0 },
+]
 
 export default function DashboardPage() {
   const [currentTime] = useState(new Date())
@@ -229,6 +257,57 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Solar PPA Forecast Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sun className="w-5 h-5 text-warning" />
+                <span>Solar PPA Forecast</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={solarForecastData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis
+                    dataKey="hour"
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={3}
+                  />
+                  <YAxis
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}kW`}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="output"
+                    stroke="hsl(var(--warning))"
+                    strokeWidth={2}
+                    fill="url(#solarGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+              <div className="mt-3 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Expected Daily Output</span>
+                <span className="font-bold tabular-nums">
+                  {solarForecastData.reduce((sum, d) => sum + d.output, 0).toFixed(1)} kWh
+                </span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
