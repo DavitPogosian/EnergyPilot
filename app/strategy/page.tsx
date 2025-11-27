@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BottomNav } from "@/components/bottom-nav"
@@ -24,6 +24,22 @@ export default function StrategyPage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [estimatedSavings, setEstimatedSavings] = useState<number | null>(null)
   const [isApplying, setIsApplying] = useState(false)
+
+  useEffect(() => {
+    const config = localStorage.getItem("energypilot_config")
+    if (config) {
+      const parsed = JSON.parse(config)
+      if (parsed.defaultStrategy === "custom") {
+        setActivePreset("custom")
+      } else if (parsed.defaultStrategy === "auto") {
+        setActivePreset("smartshift")
+      } else if (parsed.defaultStrategy === "eco") {
+        setActivePreset("eco")
+      } else if (parsed.defaultStrategy === "aggressive") {
+        setActivePreset("peak-avoid")
+      }
+    }
+  }, [])
 
   const handleApplyStrategy = async () => {
     setIsApplying(true)
@@ -73,6 +89,8 @@ export default function StrategyPage() {
     setIntervals([])
     setActivePreset("custom")
   }
+
+  const isTimelineReadOnly = activePreset !== "custom"
 
   return (
     <>
@@ -193,10 +211,14 @@ export default function StrategyPage() {
           <Card>
             <CardHeader>
               <CardTitle>Timeline Editor</CardTitle>
-              <CardDescription>Click and drag to select time ranges, then choose an action</CardDescription>
+              <CardDescription>
+                {isTimelineReadOnly
+                  ? "Timeline view (read-only). Switch to Custom strategy to edit."
+                  : "Click and drag to select time ranges, then choose an action"}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <TimelineEditor intervals={intervals} onChange={setIntervals} />
+              <TimelineEditor intervals={intervals} onChange={setIntervals} readOnly={isTimelineReadOnly} />
             </CardContent>
           </Card>
 

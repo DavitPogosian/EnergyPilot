@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
 import { Progress } from "@/components/ui/progress"
 import { Car, Battery, Sun, Zap, ChevronRight, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type OnboardingStep = 1 | 2 | 3
+
+interface QuestionnaireAnswers {
+  expectation: "reduce_bills" | "clean_footprint" | null
+  activity: "fully_active" | "leave_alone" | null
+}
 
 interface OnboardingData {
   hasEV: boolean
@@ -22,7 +25,8 @@ interface OnboardingData {
   doNotDisturbStart: string
   doNotDisturbEnd: string
   preferSelfConsumption: boolean
-  defaultStrategy: "auto" | "eco" | "aggressive"
+  defaultStrategy: "custom" | "auto" | "eco" | "aggressive"
+  questionnaire: QuestionnaireAnswers
 }
 
 export default function OnboardingPage() {
@@ -38,9 +42,22 @@ export default function OnboardingPage() {
     doNotDisturbEnd: "06:00",
     preferSelfConsumption: true,
     defaultStrategy: "auto",
+    questionnaire: {
+      expectation: null,
+      activity: null,
+    },
   })
 
   const progress = (step / 3) * 100
+
+  const determineStrategy = (): OnboardingData["defaultStrategy"] => {
+    const { expectation, activity } = data.questionnaire
+    if (expectation === "reduce_bills" && activity === "fully_active") return "custom"
+    if (expectation === "reduce_bills" && activity === "leave_alone") return "auto"
+    if (expectation === "clean_footprint" && activity === "fully_active") return "eco"
+    if (expectation === "clean_footprint" && activity === "leave_alone") return "aggressive"
+    return "auto"
+  }
 
   const handleComplete = () => {
     localStorage.setItem("energypilot_config", JSON.stringify(data))
@@ -196,199 +213,360 @@ export default function OnboardingPage() {
             {step === 2 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2 text-balance">Comfort settings</h2>
-                  <p className="text-muted-foreground text-balance">Set your preferences for energy management</p>
+                  <h2 className="text-2xl font-bold mb-2 text-balance">Tell us about yourself</h2>
+                  <p className="text-muted-foreground text-balance">Help us understand your preferences</p>
                 </div>
-
-                {data.hasBattery && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Minimum Battery Reserve</CardTitle>
-                      <CardDescription>Keep your battery above this level for emergencies</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-3xl font-bold tabular-nums">{data.minBatterySOC}%</span>
-                        <Battery className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <Slider
-                        value={[data.minBatterySOC]}
-                        onValueChange={([value]) => setData({ ...data, minBatterySOC: value })}
-                        min={0}
-                        max={100}
-                        step={5}
-                        className="w-full"
-                      />
-                      <p className="text-xs text-muted-foreground">Recommended: 20% for backup power</p>
-                    </CardContent>
-                  </Card>
-                )}
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Do Not Disturb Hours</CardTitle>
-                    <CardDescription>Prevent charging/discharging during these hours</CardDescription>
+                    <CardTitle>What do you expect from me most?</CardTitle>
+                    <CardDescription>Choose the option that matters most to you</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="start-time">Start Time</Label>
-                        <input
-                          id="start-time"
-                          type="time"
-                          value={data.doNotDisturbStart}
-                          onChange={(e) => setData({ ...data, doNotDisturbStart: e.target.value })}
-                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="end-time">End Time</Label>
-                        <input
-                          id="end-time"
-                          type="time"
-                          value={data.doNotDisturbEnd}
-                          onChange={(e) => setData({ ...data, doNotDisturbEnd: e.target.value })}
-                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground"
-                        />
-                      </div>
-                    </div>
+                  <CardContent className="space-y-3">
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all border-2",
+                        data.questionnaire.expectation === "reduce_bills"
+                          ? "border-primary bg-primary/5"
+                          : "border-border",
+                      )}
+                      onClick={() =>
+                        setData({
+                          ...data,
+                          questionnaire: { ...data.questionnaire, expectation: "reduce_bills" },
+                        })
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                              data.questionnaire.expectation === "reduce_bills"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted",
+                            )}
+                          >
+                            {data.questionnaire.expectation === "reduce_bills" ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Zap className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold">Reduce my bills and why not make some money</h3>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all border-2",
+                        data.questionnaire.expectation === "clean_footprint"
+                          ? "border-primary bg-primary/5"
+                          : "border-border",
+                      )}
+                      onClick={() =>
+                        setData({
+                          ...data,
+                          questionnaire: { ...data.questionnaire, expectation: "clean_footprint" },
+                        })
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                              data.questionnaire.expectation === "clean_footprint"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted",
+                            )}
+                          >
+                            {data.questionnaire.expectation === "clean_footprint" ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Sun className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold">Leave a clean footprint in this household</h3>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 pr-4">
-                        <h3 className="font-semibold mb-1">Prefer Self-Consumption</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Use solar energy locally before exporting to grid
-                        </p>
-                      </div>
-                      <Switch
-                        checked={data.preferSelfConsumption}
-                        onCheckedChange={(checked) => setData({ ...data, preferSelfConsumption: checked })}
-                      />
-                    </div>
+                  <CardHeader>
+                    <CardTitle>How active do you want to be?</CardTitle>
+                    <CardDescription>Choose your preferred level of involvement</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all border-2",
+                        data.questionnaire.activity === "fully_active"
+                          ? "border-primary bg-primary/5"
+                          : "border-border",
+                      )}
+                      onClick={() =>
+                        setData({
+                          ...data,
+                          questionnaire: { ...data.questionnaire, activity: "fully_active" },
+                        })
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                              data.questionnaire.activity === "fully_active"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted",
+                            )}
+                          >
+                            {data.questionnaire.activity === "fully_active" ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Battery className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold">I am fully onboard and active all the time</h3>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card
+                      className={cn(
+                        "cursor-pointer transition-all border-2",
+                        data.questionnaire.activity === "leave_alone" ? "border-primary bg-primary/5" : "border-border",
+                      )}
+                      onClick={() =>
+                        setData({
+                          ...data,
+                          questionnaire: { ...data.questionnaire, activity: "leave_alone" },
+                        })
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                              data.questionnaire.activity === "leave_alone"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted",
+                            )}
+                          >
+                            {data.questionnaire.activity === "leave_alone" ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Car className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold">Leave me alone, you manage everything</h3>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </CardContent>
                 </Card>
               </div>
             )}
 
-            {step === 3 && (
-              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2 text-balance">Choose your strategy</h2>
-                  <p className="text-muted-foreground text-balance">
-                    Select how EnergyPilot should manage your devices
-                  </p>
-                </div>
+            {step === 3 &&
+              (() => {
+                const selectedStrategy = determineStrategy()
+                // Auto-select the strategy when entering step 3
+                if (data.defaultStrategy !== selectedStrategy) {
+                  setData({ ...data, defaultStrategy: selectedStrategy })
+                }
 
-                <Card
-                  className={cn(
-                    "cursor-pointer transition-all border-2",
-                    data.defaultStrategy === "auto" ? "border-primary bg-primary/5" : "border-border",
-                  )}
-                  onClick={() => setData({ ...data, defaultStrategy: "auto" })}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                          data.defaultStrategy === "auto" ? "bg-primary text-primary-foreground" : "bg-muted",
+                return (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold mb-2 text-balance">Your recommended strategy</h2>
+                      <p className="text-muted-foreground text-balance">
+                        Based on your preferences, we selected the best strategy for you
+                      </p>
+                    </div>
+
+                    {/* Custom Strategy */}
+                    <div
+                      className={cn(
+                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                        data.defaultStrategy === "custom"
+                          ? "bg-primary/5 border-primary/20"
+                          : "bg-muted/30 border-border opacity-50",
+                      )}
+                      onClick={() => setData({ ...data, defaultStrategy: "custom" })}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        {data.defaultStrategy === "custom" ? (
+                          <Check className="w-5 h-5 text-primary" />
+                        ) : (
+                          <Zap className="w-5 h-5 text-primary" />
                         )}
-                      >
-                        {data.defaultStrategy === "auto" ? <Check className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold mb-1">SmartShift (Auto)</h3>
+                        <h4 className="font-semibold mb-1">Custom</h4>
                         <p className="text-sm text-muted-foreground mb-2">
-                          AI-powered optimization for maximum savings
+                          Full control over your energy strategy. Edit timeline blocks to create custom schedules.
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          <span className="text-xs px-2 py-1 rounded-md bg-success/10 text-success">Best Savings</span>
-                          <span className="text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
+                          >
+                            Full Control
+                          </span>
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                          >
+                            Advanced
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SmartShift AI Strategy */}
+                    <div
+                      className={cn(
+                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                        data.defaultStrategy === "auto"
+                          ? "bg-primary/5 border-primary/20"
+                          : "bg-muted/30 border-border opacity-50",
+                      )}
+                      onClick={() => setData({ ...data, defaultStrategy: "auto" })}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        {data.defaultStrategy === "auto" ? (
+                          <Check className="w-5 h-5 text-primary" />
+                        ) : (
+                          <Zap className="w-5 h-5 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-1">SmartShift AI Strategy</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          AI-powered optimization that charges during low prices and discharges during peak hours for
+                          maximum savings.
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
+                          >
+                            Best Savings
+                          </span>
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
+                          >
                             Recommended
                           </span>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
 
-                <Card
-                  className={cn(
-                    "cursor-pointer transition-all border-2",
-                    data.defaultStrategy === "eco" ? "border-primary bg-primary/5" : "border-border",
-                  )}
-                  onClick={() => setData({ ...data, defaultStrategy: "eco" })}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                          data.defaultStrategy === "eco" ? "bg-primary text-primary-foreground" : "bg-muted",
-                        )}
-                      >
-                        {data.defaultStrategy === "eco" ? <Check className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold mb-1">ECO Mode</h3>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Prioritize renewable energy and self-consumption
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span className="text-xs px-2 py-1 rounded-md bg-success/10 text-success">Low Carbon</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card
-                  className={cn(
-                    "cursor-pointer transition-all border-2",
-                    data.defaultStrategy === "aggressive" ? "border-primary bg-primary/5" : "border-border",
-                  )}
-                  onClick={() => setData({ ...data, defaultStrategy: "aggressive" })}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                          data.defaultStrategy === "aggressive" ? "bg-primary text-primary-foreground" : "bg-muted",
-                        )}
-                      >
-                        {data.defaultStrategy === "aggressive" ? (
-                          <Check className="w-5 h-5" />
+                    {/* ECO Mode */}
+                    <div
+                      className={cn(
+                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                        data.defaultStrategy === "eco"
+                          ? "bg-success/5 border-success/20"
+                          : "bg-muted/30 border-border opacity-50",
+                      )}
+                      onClick={() => setData({ ...data, defaultStrategy: "eco" })}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
+                        {data.defaultStrategy === "eco" ? (
+                          <Check className="w-5 h-5 text-success" />
                         ) : (
-                          <Battery className="w-5 h-5" />
+                          <Sun className="w-5 h-5 text-success" />
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold mb-1">Peak Shaving</h3>
+                        <h4 className="font-semibold mb-1">ECO Mode</h4>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Maximize grid arbitrage and export during peaks
+                          Prioritizes renewable energy and self-consumption. Minimizes grid interaction and reduces
+                          carbon footprint.
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          <span className="text-xs px-2 py-1 rounded-md bg-warning/10 text-warning">High Activity</span>
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
+                          >
+                            Low Carbon
+                          </span>
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                          >
+                            Self Sufficient
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
 
-                <Card className="bg-muted/50 border-dashed">
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground text-center">
-                      You can always change your strategy later in settings
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+                    {/* Peak Shaving */}
+                    <div
+                      className={cn(
+                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                        data.defaultStrategy === "aggressive"
+                          ? "bg-warning/5 border-warning/20"
+                          : "bg-muted/30 border-border opacity-50",
+                      )}
+                      onClick={() => setData({ ...data, defaultStrategy: "aggressive" })}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+                        {data.defaultStrategy === "aggressive" ? (
+                          <Check className="w-5 h-5 text-warning" />
+                        ) : (
+                          <Battery className="w-5 h-5 text-warning" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-1">Peak Shaving</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Maximizes grid arbitrage by discharging to grid during peak hours. Best for earning from high
+                          export prices.
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-warning/10 text-warning border-warning/20"
+                          >
+                            High Revenue
+                          </span>
+                          <span
+                            data-slot="badge"
+                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                          >
+                            Grid Export
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Card className="bg-muted/50 border-dashed">
+                      <CardContent className="p-4">
+                        <p className="text-sm text-muted-foreground text-center">
+                          You can always change your strategy later in the Strategy Editor
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )
+              })()}
           </div>
         </div>
 
