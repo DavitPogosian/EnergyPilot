@@ -59,7 +59,7 @@ export default function NotificationsPage() {
       timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
       isRead: true,
       action: {
-        label: "Spply Strategy",
+        label: "Apply Strategy",
         handler: () => console.log("[v0] View strategy"),
       },
     },

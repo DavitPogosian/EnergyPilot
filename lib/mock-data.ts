@@ -54,7 +54,7 @@ export const mockDevices: DeviceStatus[] = [
   },{
     id: "ev-1",
     type: "ev",
-    name: "Tesla Model 3",
+    name: "Electric Vehicle",
     isOnline: true,
     soc: 65,
     capacity: 75,

@@ -98,11 +98,11 @@ export function DeviceCard({ device }: DeviceCardProps) {
   const renderEVActions = () => (
     <div className="grid grid-cols-2 gap-2 mt-4">
       <Button
-        onClick={() => handleAction("charge_now")}
+        onClick={() => handleAction("chargeing")}
         disabled={isLoading || !device.isPlugged}
         size="sm"
-        variant={selectedAction === "charge_now" ? "default" : "outline"}
-        className={cn("gap-2", selectedAction === "charge_now" && "bg-success hover:bg-success/90 text-white")}
+        variant={selectedAction === "charging" ? "default" : "outline"}
+        className={cn("gap-2", selectedAction === "charging" && "bg-success hover:bg-success/90 text-white")}
       >
         <Play className="w-4 h-4" />
         Charge
@@ -204,8 +204,8 @@ export function DeviceCard({ device }: DeviceCardProps) {
     <div className="space-y-3">
       <div className="p-4 rounded-lg bg-muted/50 text-center">
         <Lock className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-        <p className="text-sm font-medium mb-1">Premium Feature</p>
-        <p className="text-xs text-muted-foreground">Heat pump control is available with our premium plan</p>
+        <p className="text-sm font-medium mb-1">Feature Locked</p>
+        <p className="text-xs text-muted-foreground">You have not unlocked this device yet</p>
       </div>
     </div>
   )
@@ -263,15 +263,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
               <h3 className="font-semibold">{device.name}</h3>
               {getStatusBadge()}
             </div>
-            <p className="text-sm text-muted-foreground capitalize">
-              {device.type === "ev"
-                ? "Electric Vehicle"
-                : device.type === "ppa"
-                  ? "Power Purchase Agreement"
-                  : device.type === "heatpump"
-                    ? "Heat Pump"
-                    : "Home Battery"}
-            </p>
           </div>
         </div>
 
@@ -406,15 +397,18 @@ export function DeviceCard({ device }: DeviceCardProps) {
       <AlertDialog open={showLockedDialog} onOpenChange={setShowLockedDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Feature Locked</AlertDialogTitle>
+            <AlertDialogTitle>Contact us!</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <div>
-                  You haven't unlocked this functionality yet. Heat pump control is available with our premium plan.
+                   Continue making money and saving the environment.
                 </div>
                 <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                  <div className="text-sm font-medium text-foreground mb-2">Contact our team to unlock:</div>
-                  <div className="text-2xl font-bold text-primary">📞 123321</div>
+                  <div className="text-sm font-medium text-foreground mb-2">Contact our team:</div>
+
+
+                  <div className="text-2xl font-bold text-primary">📞 +35228838080</div>
+
                 </div>
               </div>
             </AlertDialogDescription>

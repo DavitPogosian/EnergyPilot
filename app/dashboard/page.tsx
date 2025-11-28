@@ -264,7 +264,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sun className="w-5 h-5 text-warning" />
-                <span>Solar PPA Forecast</span>
+                <span>Solar Forecast</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

@@ -14,7 +14,7 @@ export function NegativePriceBanner({ price }: NegativePriceBannerProps) {
     await fetch("/api/devices/ev-1/action", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "charge_now" }),
+      body: JSON.stringify({ action: "charging" }),
     })
   }
 
