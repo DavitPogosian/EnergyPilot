@@ -199,8 +199,8 @@ export default function OnboardingPage() {
                           <Zap className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Smart PPA</h3>
-                          <p className="text-sm text-muted-foreground">Dynamic pricing plan</p>
+                          <h3 className="font-semibold">Dynamic Tariff</h3>
+                          <p className="text-sm text-muted-foreground">Follows market prices every 15 minutes</p>
                         </div>
                       </div>
                       <Switch checked={data.hasPPA} />

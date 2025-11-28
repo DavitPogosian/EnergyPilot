@@ -27,7 +27,7 @@ export default function NotificationsPage() {
       id: "1",
       type: "negative_price",
       title: "Negative Price Alert",
-      message: "Energy price is -€2.50/MWh. You are being paid to charge right now.",
+      message: "Energy price is -€2.50/MWh. Start charging your battery from the grid.",
       timestamp: new Date(Date.now() - 5 * 60 * 1000),
       isRead: false,
       action: {
@@ -53,24 +53,25 @@ export default function NotificationsPage() {
     },
     {
       id: "4",
+      type: "info",
+      title: "Strategy change recommended",
+      message: "Clouds expected this afternoon. Consider switching to self-consumption mode to maximise your free solar energy",
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      isRead: true,
+      action: {
+        label: "Spply Strategy",
+        handler: () => console.log("[v0] View strategy"),
+      },
+    },
+    {
+      id: "5",
       type: "strategy_executed",
       title: "Strategy Applied",
       message: "SmartShift AI strategy has been activated. Estimated savings: €12.45 today.",
       timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
       isRead: true,
     },
-    {
-      id: "5",
-      type: "info",
-      title: "Peak Hours Starting",
-      message: "Peak pricing period begins in 15 minutes. Your battery will start discharging to grid.",
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-      isRead: true,
-      action: {
-        label: "View Strategy",
-        handler: () => console.log("[v0] View strategy"),
-      },
-    },
+    
   ])
 
   const unreadCount = notifications.filter((n) => !n.isRead).length

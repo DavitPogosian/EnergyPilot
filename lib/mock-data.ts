@@ -60,7 +60,7 @@ export const mockDevices: DeviceStatus[] = [
   {
     id: "ppa-1",
     type: "ppa",
-    name: "Solar PPA",
+    name: "Solar",
     isOnline: true,
     status: "auto",
   },

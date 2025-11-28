@@ -19,10 +19,10 @@ const timeSlots = Array.from({ length: 96 }, (_, i) => {
 })
 
 const actions = [
-  { value: "charge_from_grid", label: "Charge from Grid", icon: Battery, color: "bg-red-500" },
-  { value: "discharge_to_grid", label: "Discharge to Grid", icon: TrendingUp, color: "bg-green-500" },
-  { value: "self_consumption", label: "Self Consumption", icon: Sun, color: "bg-blue-500" },
-  { value: "idle", label: "Idle", icon: Zap, color: "bg-orange-500" },
+  { value: "charge_from_grid", label: "Consume from Grid", icon: Battery, color: "bg-red-500" },
+  { value: "discharge_to_grid", label: "Inject", icon: TrendingUp, color: "bg-green-500" },
+  { value: "self_consumption", label: "Self Consume", icon: Sun, color: "bg-blue-500" },
+  { value: "idle", label: "Share", icon: Zap, color: "bg-orange-500" },
 ] as const
 
 export function TimelineEditor({ intervals, onChange, readOnly = false }: TimelineEditorProps) {

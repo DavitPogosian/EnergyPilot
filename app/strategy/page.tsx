@@ -118,7 +118,7 @@ export default function StrategyPage() {
           {/* Strategy Presets */}
           <Card>
             <CardHeader>
-              <CardTitle>Strategy Presets</CardTitle>
+              <CardTitle>Strategy Options</CardTitle>
               <CardDescription>Choose a preset or create your own custom strategy</CardDescription>
             </CardHeader>
             <CardContent>
@@ -214,11 +214,6 @@ export default function StrategyPage() {
           <Card>
             <CardHeader>
               <CardTitle>Timeline Editor</CardTitle>
-              <CardDescription>
-                {isTimelineReadOnly
-                  ? "Timeline view (read-only). Switch to Custom strategy to edit."
-                  : "Click and drag to select time ranges, then choose an action"}
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <TimelineEditor intervals={intervals} onChange={setIntervals} readOnly={isTimelineReadOnly} />

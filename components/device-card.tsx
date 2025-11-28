@@ -228,7 +228,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
               {device.type === "ev"
                 ? "Electric Vehicle"
                 : device.type === "ppa"
-                  ? "Power Purchase Agreement"
+                  ? "Photovoltaic"
                   : "Home Battery"}
             </p>
           </div>
@@ -282,10 +282,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
 
         {device.type === "ppa" && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Current Mode</span>
-              <span className="font-semibold capitalize">{device.status}</span>
-            </div>
             <div className="space-y-2">
               <h4 className="text-sm font-medium">Today's Solar Forecast</h4>
               <div className="h-32 w-full">
@@ -340,11 +336,6 @@ export function DeviceCard({ device }: DeviceCardProps) {
               </div>
               <p className="text-xs text-muted-foreground text-center">
                 Expected peak: 12.0 kW at 13:00 • Total: 108 kWh
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-muted/50">
-              <p className="text-xs text-muted-foreground text-center">
-                Dynamic pricing based on EPEX day-ahead market
               </p>
             </div>
           </div>

@@ -135,7 +135,7 @@ export default function DashboardPage() {
                   <div className="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
                     <Battery className="w-4 h-4 text-warning" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground">Battery SOC</span>
+                  <span className="text-xs font-medium text-muted-foreground">Battery</span>
                 </div>
                 <div className="text-2xl font-bold tabular-nums">{summary?.batterySoc || 0}%</div>
                 <div className="w-full bg-muted rounded-full h-1.5 mt-2">
@@ -153,7 +153,7 @@ export default function DashboardPage() {
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Car className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground">EV Charge</span>
+                  <span className="text-xs font-medium text-muted-foreground">Electric Vehicle</span>
                 </div>
                 <div className="text-2xl font-bold tabular-nums">{summary?.evSoc || 0}%</div>
                 <div className="w-full bg-muted rounded-full h-1.5 mt-2">
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                   <div className="flex-1">
                     <p className="text-sm font-medium text-muted-foreground">Your Ranking</p>
                     <p className="text-lg font-bold text-balance">
-                      You beat {summary.userPercentile}% of users in Belval today
+                      You beat {summary.userPercentile}% of households in Belval today
                     </p>
                   </div>
                 </div>
@@ -200,7 +200,8 @@ export default function DashboardPage() {
                           ? "text-destructive"
                           : "text-foreground",
                     )}
-                  >
+                  > 
+                    {"Your Price Now "}
                     {currentPrice.price > 0 ? "€" : ""}
                     {currentPrice.price.toFixed(2)}
                     {currentPrice.price > 0 ? "/MWh" : " €/MWh"}
