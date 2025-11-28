@@ -10,7 +10,7 @@ A mobile-first Progressive Web App that helps residential customers in Luxembour
 
 EnergyPilot empowers homeowners to take control of their energy usage by automatically scheduling smart devices (EVs, batteries, solar) to charge during low-price periods and discharge during peak-price times. Save money, reduce carbon emissions, and maximize your renewable energy investment.
 
-**This project was developed during the [Watt the Hack Hackathon]
+**This project was developed during the [Watt the Hack Hackathon]**
 
 ## ✨ Key Features
 
