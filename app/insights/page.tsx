@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { BottomNav } from "@/components/bottom-nav"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrendingDown, TrendingUp, Leaf, Download, Award, Calendar, Euro, Zap } from "lucide-react"
+import { TrendingDown, TrendingUp, Leaf, Download, Calendar, Euro, Zap, Trophy, Medal } from "lucide-react"
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
 const dailyCostData = [
@@ -23,6 +23,19 @@ const weeklySavingsData = [
   { week: "W2", savings: 52 },
   { week: "W3", savings: 38 },
   { week: "W4", savings: 67 },
+]
+
+const leaderboardData = [
+  { rank: 376, name: "Sophie M.", savings: 289.5, badge: "Elite" },
+  { rank: 377, name: "Marc L.", savings: 287.2, badge: "Elite" },
+  { rank: 378, name: "Julia K.", savings: 285.8, badge: "Elite" },
+  { rank: 379, name: "You", savings: 284.3, badge: "Elite", isCurrentUser: true },
+  { rank: 380, name: "Thomas B.", savings: 282.9, badge: "Elite" },
+  { rank: 381, name: "Emma W.", savings: 281.1, badge: "Pro" },
+  { rank: 382, name: "Lucas R.", savings: 279.4, badge: "Pro" },
+  { rank: 383, name: "Nina S.", savings: 277.8, badge: "Pro" },
+  { rank: 384, name: "David P.", savings: 276.2, badge: "Pro" },
+  { rank: 385, name: "Sarah H.", savings: 274.5, badge: "Pro" },
 ]
 
 export default function InsightsPage() {
@@ -113,18 +126,87 @@ export default function InsightsPage() {
 
           {/* Leaderboard Card */}
           <Card className="bg-gradient-to-br from-primary/10 via-accent/10 to-success/10 border-primary/20">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Award className="w-6 h-6 text-primary" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Community Ranking</CardTitle>
+                    <CardDescription className="text-xs">Top 15% in Belval this month</CardDescription>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-muted-foreground">Community Ranking</p>
-                  <p className="text-lg font-bold text-balance mb-1">Top 15% in Belval this month</p>
-                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                    Elite Saver
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                  Elite Saver
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              {leaderboardData.map((user) => (
+                <div
+                  key={user.rank}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    user.isCurrentUser ? "bg-primary/20 border border-primary/30" : "bg-card/50 hover:bg-card/80"
+                  }`}
+                >
+                  {/* Rank */}
+                  <div className="flex items-center justify-center w-10">
+                    {user.rank <= 3 ? (
+                      <Medal
+                        className={`w-5 h-5 ${
+                          user.rank === 1 ? "text-yellow-500" : user.rank === 2 ? "text-gray-400" : "text-orange-600"
+                        }`}
+                      />
+                    ) : (
+                      <span
+                        className={`text-sm font-bold tabular-nums ${
+                          user.isCurrentUser ? "text-primary" : "text-muted-foreground"
+                        }`}
+                      >
+                        #{user.rank}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-sm font-medium truncate ${
+                        user.isCurrentUser ? "text-primary font-bold" : "text-foreground"
+                      }`}
+                    >
+                      {user.name}
+                    </p>
+                  </div>
+
+                  {/* Savings */}
+                  <div className="text-right">
+                    <p
+                      className={`text-sm font-bold tabular-nums ${
+                        user.isCurrentUser ? "text-primary" : "text-success"
+                      }`}
+                    >
+                      €{user.savings.toFixed(2)}
+                    </p>
+                  </div>
+
+                  {/* Badge */}
+                  <Badge
+                    variant="outline"
+                    className={`text-xs ${
+                      user.badge === "Elite"
+                        ? "bg-primary/10 text-primary border-primary/20"
+                        : "bg-accent/10 text-accent border-accent/20"
+                    }`}
+                  >
+                    {user.badge}
                   </Badge>
                 </div>
+              ))}
+
+              <div className="pt-2 mt-2 border-t border-border/50">
+                <p className="text-xs text-center text-muted-foreground">Keep going! You're €5.50 away from rank 378</p>
               </div>
             </CardContent>
           </Card>
