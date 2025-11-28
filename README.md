@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./watt-the-hack-header.jpg" alt="Watt the Hack Hackathon" width="100%">
+  <img src="./enc_img_neo_news_watt the hack__header_wth.jpg" alt="Watt the Hack Hackathon" width="100%">
 </div>
 
 # ⚡ EnergyPilot
