@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./watt-the-hack-header.jpg" alt="Watt the Hack Hackathon" width="100%">
+</div>
+
 # ⚡ EnergyPilot
 
 A mobile-first Progressive Web App that helps residential customers in Luxembourg optimize their energy consumption and costs based on EPEX day-ahead electricity prices.
