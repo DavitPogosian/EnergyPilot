@@ -36,7 +36,22 @@ export function generateMockPrices(date: string): PriceData[] {
 }
 
 export const mockDevices: DeviceStatus[] = [
+
   {
+    id: "ppa-1",
+    type: "ppa",
+    name: "Solar",
+    isOnline: true,
+    status: "auto",
+  },{
+    id: "battery-1",
+    type: "battery",
+    name: "Home Battery",
+    isOnline: true,
+    soc: 45,
+    capacity: 10,
+    status: "auto",
+  },{
     id: "ev-1",
     type: "ev",
     name: "Tesla Model 3",
@@ -48,21 +63,16 @@ export const mockDevices: DeviceStatus[] = [
     isCharging: false,
     status: "auto",
   },
-  {
-    id: "battery-1",
-    type: "battery",
-    name: "Home Battery",
+  
+  
+    
+    {
+    id: "heatpump-1",
+    type: "heatpump",
+    name: "Heat Pump",
     isOnline: true,
-    soc: 45,
-    capacity: 10,
-    status: "auto",
-  },
-  {
-    id: "ppa-1",
-    type: "ppa",
-    name: "Solar",
-    isOnline: true,
-    status: "auto",
+    locked: true,
+    status: "idle",
   },
 ]
 

@@ -5,12 +5,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DeviceIcon } from "@/components/device-icon"
-import { Play, Zap, ArrowUpCircle, ArrowDownCircle, Home, Power, PowerOff } from "lucide-react"
+import { Play, Zap, ArrowUpCircle, ArrowDownCircle, Home, Power, PowerOff, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { DeviceStatus } from "@/lib/types"
 import { mutate } from "swr"
 import { toast } from "@/hooks/use-toast"
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface DeviceCardProps {
   device: DeviceStatus
@@ -19,10 +28,15 @@ interface DeviceCardProps {
 export function DeviceCard({ device }: DeviceCardProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedAction, setSelectedAction] = useState<string>(device.status || "")
+  const [showLockedDialog, setShowLockedDialog] = useState(false)
 
   useEffect(() => {
     setSelectedAction(device.status || "")
   }, [device.status])
+
+  const handleLockedClick = () => {
+    setShowLockedDialog(true)
+  }
 
   const handleAction = async (action: string) => {
     setIsLoading(true)
@@ -52,6 +66,15 @@ export function DeviceCard({ device }: DeviceCardProps) {
   }
 
   const getStatusBadge = () => {
+    if (device.locked) {
+      return (
+        <Badge variant="outline" className="bg-muted text-muted-foreground gap-1">
+          <Lock className="w-3 h-3" />
+          Locked
+        </Badge>
+      )
+    }
+
     if (!device.isOnline) {
       return (
         <Badge variant="outline" className="bg-muted text-muted-foreground">
@@ -177,6 +200,16 @@ export function DeviceCard({ device }: DeviceCardProps) {
     </div>
   )
 
+  const renderHeatPumpInfo = () => (
+    <div className="space-y-3">
+      <div className="p-4 rounded-lg bg-muted/50 text-center">
+        <Lock className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+        <p className="text-sm font-medium mb-1">Premium Feature</p>
+        <p className="text-xs text-muted-foreground">Heat pump control is available with our premium plan</p>
+      </div>
+    </div>
+  )
+
   const solarForecastData = [
     { hour: "00:00", output: 0 },
     { hour: "01:00", output: 0 },
@@ -204,19 +237,25 @@ export function DeviceCard({ device }: DeviceCardProps) {
     { hour: "23:00", output: 0 },
   ]
 
-  return (
-    <Card className={cn(!device.isOnline && "opacity-60")}>
+  const cardContent = (
+    <Card
+      className={cn(
+        !device.isOnline && "opacity-60",
+        device.locked && "cursor-pointer hover:border-primary/50 transition-colors",
+      )}
+      onClick={device.locked ? handleLockedClick : undefined}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 mb-4">
           <div
             className={cn(
               "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0",
-              device.isOnline ? "bg-primary/10" : "bg-muted",
+              device.isOnline && !device.locked ? "bg-primary/10" : "bg-muted",
             )}
           >
             <DeviceIcon
               type={device.type}
-              className={cn("w-6 h-6", device.isOnline ? "text-primary" : "text-muted-foreground")}
+              className={cn("w-6 h-6", device.isOnline && !device.locked ? "text-primary" : "text-muted-foreground")}
             />
           </div>
           <div className="flex-1">
@@ -228,127 +267,163 @@ export function DeviceCard({ device }: DeviceCardProps) {
               {device.type === "ev"
                 ? "Electric Vehicle"
                 : device.type === "ppa"
-                  ? "Photovoltaic"
-                  : "Home Battery"}
+                  ? "Power Purchase Agreement"
+                  : device.type === "heatpump"
+                    ? "Heat Pump"
+                    : "Home Battery"}
             </p>
           </div>
         </div>
 
-        {device.type === "ev" && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">State of Charge</span>
-              <span className="font-semibold tabular-nums">{device.soc}%</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2">
-              <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${device.soc}%` }} />
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Plugged In</span>
-              <span className={cn("font-medium", device.isPlugged ? "text-success" : "text-muted-foreground")}>
-                {device.isPlugged ? "Yes" : "No"}
-              </span>
-            </div>
-            {device.isCharging && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Charging Rate</span>
-                <span className="font-semibold tabular-nums">{device.chargingRate} kW</span>
+        {device.locked ? (
+          renderHeatPumpInfo()
+        ) : (
+          <>
+            {device.type === "ev" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">State of Charge</span>
+                  <span className="font-semibold tabular-nums">{device.soc}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${device.soc}%` }} />
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Plugged In</span>
+                  <span className={cn("font-medium", device.isPlugged ? "text-success" : "text-muted-foreground")}>
+                    {device.isPlugged ? "Yes" : "No"}
+                  </span>
+                </div>
+                {device.isCharging && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Charging Rate</span>
+                    <span className="font-semibold tabular-nums">{device.chargingRate} kW</span>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {device.type === "battery" && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">State of Charge</span>
-              <span className="font-semibold tabular-nums">{device.soc}%</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2">
-              <div className="bg-warning h-2 rounded-full transition-all" style={{ width: `${device.soc}%` }} />
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Capacity</span>
-              <span className="font-semibold tabular-nums">{device.capacity} kWh</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Available</span>
-              <span className="font-semibold tabular-nums">
-                {(((device.soc || 0) * (device.capacity || 0)) / 100).toFixed(1)} kWh
-              </span>
-            </div>
-          </div>
-        )}
-
-        {device.type === "ppa" && (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Today's Solar Forecast</h4>
-              <div className="h-32 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={solarForecastData}>
-                    <defs>
-                      <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis
-                      dataKey="hour"
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={10}
-                      tickLine={false}
-                      axisLine={false}
-                      interval={5}
-                    />
-                    <YAxis
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={10}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `${value}kW`}
-                    />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="rounded-lg border bg-background p-2 shadow-sm">
-                              <div className="grid grid-cols-2 gap-2">
-                                <span className="text-xs text-muted-foreground">{payload[0].payload.hour}</span>
-                                <span className="text-xs font-bold text-warning">{payload[0].value} kW</span>
-                              </div>
-                            </div>
-                          )
-                        }
-                        return null
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="output"
-                      stroke="hsl(var(--warning))"
-                      fillOpacity={1}
-                      fill="url(#solarGradient)"
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+            {device.type === "battery" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">State of Charge</span>
+                  <span className="font-semibold tabular-nums">{device.soc}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-warning h-2 rounded-full transition-all" style={{ width: `${device.soc}%` }} />
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Capacity</span>
+                  <span className="font-semibold tabular-nums">{device.capacity} kWh</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Available</span>
+                  <span className="font-semibold tabular-nums">
+                    {(((device.soc || 0) * (device.capacity || 0)) / 100).toFixed(1)} kWh
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground text-center">
-                Expected peak: 12.0 kW at 13:00 • Total: 108 kWh
-              </p>
-            </div>
-          </div>
-        )}
+            )}
 
-        {device.isOnline && (
-          <>
-            {device.type === "ev" && renderEVActions()}
-            {device.type === "battery" && renderBatteryActions()}
-            {device.type === "ppa" && renderPPAActions()}
+            {device.type === "ppa" && (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Today's Solar Forecast</h4>
+                  <div className="h-32 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={solarForecastData}>
+                        <defs>
+                          <linearGradient id="solarGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis
+                          dataKey="hour"
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={10}
+                          tickLine={false}
+                          axisLine={false}
+                          interval={5}
+                        />
+                        <YAxis
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={10}
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(value) => `${value}kW`}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-xs text-muted-foreground">{payload[0].payload.hour}</span>
+                                    <span className="text-xs font-bold text-warning">{payload[0].value} kW</span>
+                                  </div>
+                                </div>
+                              )
+                            }
+                            return null
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="output"
+                          stroke="hsl(var(--warning))"
+                          fillOpacity={1}
+                          fill="url(#solarGradient)"
+                          strokeWidth={2}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Expected peak: 12.0 kW at 13:00 • Total: 108 kWh
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {device.isOnline && (
+              <>
+                {device.type === "ev" && renderEVActions()}
+                {device.type === "battery" && renderBatteryActions()}
+                {device.type === "ppa" && renderPPAActions()}
+              </>
+            )}
           </>
         )}
       </CardContent>
     </Card>
+  )
+
+  return (
+    <>
+      {cardContent}
+
+      <AlertDialog open={showLockedDialog} onOpenChange={setShowLockedDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Feature Locked</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <div>
+                  You haven't unlocked this functionality yet. Heat pump control is available with our premium plan.
+                </div>
+                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                  <div className="text-sm font-medium text-foreground mb-2">Contact our team to unlock:</div>
+                  <div className="text-2xl font-bold text-primary">📞 123321</div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Got it</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

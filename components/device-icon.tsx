@@ -1,7 +1,7 @@
-import { Car, Battery, Sun, Zap } from "lucide-react"
+import { Car, Battery, Sun, Zap , Thermometer} from "lucide-react"
 
 interface DeviceIconProps {
-  type: "ev" | "battery" | "ppa" | "solar"
+  type: "ev" | "battery" | "ppa" | "solar" | "heatpump" // Added heatpump type
   className?: string
 }
 
@@ -14,6 +14,8 @@ export function DeviceIcon({ type, className }: DeviceIconProps) {
     case "ppa":
     case "solar":
       return <Sun className={className} />
+    case "heatpump":
+      return <Thermometer className={className} />
     default:
       return <Zap className={className} />
   }

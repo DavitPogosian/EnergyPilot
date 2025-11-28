@@ -28,6 +28,8 @@ export default function DevicesPage() {
   const evDevices = devices.filter((d) => d.type === "ev")
   const batteryDevices = devices.filter((d) => d.type === "battery")
   const ppaDevices = devices.filter((d) => d.type === "ppa")
+  const heatpumpDevices = devices.filter((d) => d.type === "heatpump")
+
 
   return (
     <>
@@ -66,12 +68,14 @@ export default function DevicesPage() {
               ))}
             </div>
           ) : (
-            <Tabs defaultValue="all" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-4">
+            <Tabs defaultValue="all" className="space-y-5">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="ev">EV</TabsTrigger>
+                <TabsTrigger value="ppa">Solar</TabsTrigger>
                 <TabsTrigger value="battery">Battery</TabsTrigger>
-                <TabsTrigger value="ppa">PPA</TabsTrigger>
+                <TabsTrigger value="ev">EV</TabsTrigger>
+                <TabsTrigger value="heatpump">Heat Pump</TabsTrigger>
+
               </TabsList>
 
               <TabsContent value="all" className="space-y-4">
@@ -121,7 +125,20 @@ export default function DevicesPage() {
                   ppaDevices.map((device) => <DeviceCard key={device.id} device={device} />)
                 )}
               </TabsContent>
+              <TabsContent value="heatpump" className="space-y-4">
+                {heatpumpDevices.length === 0 ? (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <p className="text-muted-foreground">No Heat Pump devices configured</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  heatpumpDevices.map((device) => <DeviceCard key={device.id} device={device} />)
+                )}
+              </TabsContent>
+              
             </Tabs>
+            
           )}
         </div>
       </div>

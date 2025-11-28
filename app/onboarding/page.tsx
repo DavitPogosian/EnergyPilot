@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Progress } from "@/components/ui/progress"
-import { Car, Battery, Sun, Zap, ChevronRight, Check } from "lucide-react"
+import { Car, Battery, Sun, Zap, ChevronRight, Check, Thermometer } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type OnboardingStep = 1 | 2 | 3
@@ -21,6 +21,7 @@ interface OnboardingData {
   hasBattery: boolean
   hasSolar: boolean
   hasPPA: boolean
+  hasHeatpump: boolean
   minBatterySOC: number
   doNotDisturbStart: string
   doNotDisturbEnd: string
@@ -37,6 +38,7 @@ export default function OnboardingPage() {
     hasBattery: false,
     hasSolar: false,
     hasPPA: false,
+    hasHeatpump: false,
     minBatterySOC: 20,
     doNotDisturbStart: "22:00",
     doNotDisturbEnd: "06:00",
@@ -176,6 +178,33 @@ export default function OnboardingPage() {
                         </div>
                       </div>
                       <Switch checked={data.hasSolar} />
+                    </div>
+                  </CardContent>
+                </Card>
+<Card
+                  className={cn(
+                    "cursor-pointer transition-all border-2",
+                    data.hasHeatpump ? "border-primary bg-primary/5" : "border-border",
+                  )}
+                  onClick={() => setData({ ...data, hasHeatpump: !data.hasHeatpump })}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={cn(
+                            "w-12 h-12 rounded-xl flex items-center justify-center",
+                            data.hasHeatpump ? "bg-primary text-primary-foreground" : "bg-muted",
+                          )}
+                        >
+                          <Thermometer className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Heat Pump</h3>
+                          <p className="text-sm text-muted-foreground">Heat Pump</p>
+                        </div>
+                      </div>
+                      <Switch checked={data.hasHeatpump} />
                     </div>
                   </CardContent>
                 </Card>

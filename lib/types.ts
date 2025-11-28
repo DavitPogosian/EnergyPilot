@@ -7,9 +7,10 @@ export interface PriceData {
 
 export interface DeviceStatus {
   id: string
-  type: "ev" | "battery" | "ppa"
+  type: "ev" | "battery" | "ppa" | "heatpump"
   name: string
   isOnline: boolean
+  locked?: boolean 
   soc?: number
   capacity?: number
   chargingRate?: number
