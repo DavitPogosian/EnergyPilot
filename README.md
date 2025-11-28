@@ -1,54 +1,83 @@
-# EnergyPilot - Smart Energy Management PWA
+# ⚡ EnergyPilot
 
-EnergyPilot is a mobile-first Progressive Web App that helps residential customers in Luxembourg optimize their energy consumption and costs based on EPEX day-ahead electricity prices.
+A mobile-first Progressive Web App that helps residential customers in Luxembourg optimize their energy consumption and costs based on EPEX day-ahead electricity prices.
 
-## Features
+## 🎯 Overview
 
-### Core Functionality
-- **Real-time Price Monitoring**: View EPEX day-ahead prices with 30-minute resolution
-- **Smart Device Control**: Manage EV charging, home batteries, and PPAs
-- **Strategy Editor**: Create custom charging/discharging schedules or use AI presets
-- **Negative Price Alerts**: Get notified when you're paid to use electricity
-- **Performance Insights**: Track savings, CO2 impact, and community rankings
+EnergyPilot empowers homeowners to take control of their energy usage by automatically scheduling smart devices (EVs, batteries, solar) to charge during low-price periods and discharge during peak-price times. Save money, reduce carbon emissions, and maximize your renewable energy investment.
 
-### Devices Supported
-- Electric Vehicles (EV)
-- Home Battery Storage
-- Solar Panels
-- Power Purchase Agreements (PPA)
+## ✨ Key Features
 
-### Strategy Presets
-1. **SmartShift (AI)**: Automated optimization for maximum savings
-2. **ECO Mode**: Prioritizes renewable energy and self-consumption
-3. **Peak Shaving**: Maximizes grid arbitrage during peak hours
-4. **Custom**: Create your own charging/discharging schedule
+### 📊 Real-Time Price Monitoring
+- View EPEX day-ahead electricity prices with 30-minute resolution
+- Visual indicators for optimal charging/discharging windows
+- Historical price trends and forecasting
 
-## Getting Started
+### 🔌 Smart Device Control
+Manage multiple energy devices from one interface:
+- **Electric Vehicles (EV)**: Automated charging schedules
+- **Home Battery Storage**: Smart charge/discharge cycles
+- **Solar Panels**: Monitor production and optimize self-consumption
+- **Power Purchase Agreements (PPA)**: Track contract performance
+
+### 🧠 AI-Powered Strategies
+
+Choose from intelligent optimization modes:
+- **SmartShift (AI)**: Automated optimization for maximum savings
+- **ECO Mode**: Prioritizes renewable energy and self-consumption
+- **Peak Shaving**: Maximizes grid arbitrage during peak hours
+- **Custom**: Create your own charging/discharging schedule
+
+### 🔔 Negative Price Alerts
+Get notified when electricity prices go negative – you're literally paid to use energy!
+
+### 📈 Performance Insights
+- Track daily, weekly, and monthly savings
+- Monitor CO2 impact reduction
+- Community rankings and leaderboards
+- Performance badges and savings streaks
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Modern web browser (Chrome, Safari, Firefox, Edge)
 
 ### Installation
 
-\`\`\`bash
-# Install dependencies (auto-detected from imports)
+1. Clone the repository:
+```bash
+git clone https://github.com/DavitPogosian/EnergyPilot.git
+cd EnergyPilot
+```
+
+2. Install dependencies:
+```bash
 npm install
+```
 
-# Run development server
+3. Run the development server:
+```bash
 npm run dev
-\`\`\`
+```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### First-Time Setup
 
-1. Complete the 3-step onboarding:
-   - Configure your devices (EV, battery, solar, PPA)
-   - Set comfort preferences (min battery SOC, do-not-disturb hours)
-   - Choose your default strategy
+Complete the 3-step onboarding process:
 
-2. The app will redirect you to the dashboard
+1. **Configure Devices**: Add your EV, battery, solar panels, or PPA
+2. **Set Preferences**: Define minimum battery levels and do-not-disturb hours
+3. **Choose Strategy**: Select your default optimization mode
 
-## Project Structure
+The app will automatically redirect you to the dashboard after setup.
 
-\`\`\`
+## 📁 Project Structure
+
+```
 app/
 ├── onboarding/          # 3-step onboarding flow
 ├── dashboard/           # Main dashboard with price chart
@@ -71,103 +100,262 @@ components/
 └── ui/                  # shadcn/ui components
 
 lib/
-├── types.ts            # TypeScript interfaces
-└── mock-data.ts        # Sample data generation
-\`\`\`
+├── types.ts             # TypeScript interfaces
+└── mock-data.ts         # Sample data generation
+```
 
-## API Endpoints (Mock)
+## 🔌 API Endpoints
 
-### Get Day-Ahead Prices
-\`\`\`typescript
+### Get Energy Prices
+```typescript
 GET /api/prices?date=YYYY-MM-DD
-Response: { region: 'LU', date: '2025-11-25', prices: [...] }
-\`\`\`
 
-### Get Device Status
-\`\`\`typescript
+Response:
+{
+  region: 'LU',
+  date: '2025-11-25',
+  prices: [
+    { time: '00:00', price: 45.23 },
+    { time: '00:30', price: 42.11 },
+    ...
+  ]
+}
+```
+
+### Get All Devices
+```typescript
 GET /api/devices
-Response: { devices: [...] }
-\`\`\`
+
+Response:
+{
+  devices: [
+    {
+      id: 'ev-1',
+      type: 'ev',
+      name: 'Tesla Model 3',
+      battery: 75,
+      status: 'charging'
+    },
+    ...
+  ]
+}
+```
 
 ### Control Device
-\`\`\`typescript
+```typescript
 POST /api/devices/{id}/action
-Body: { action: 'charge_now' | 'stop' | 'auto' | ... }
-\`\`\`
+
+Body:
+{
+  action: 'charge_now' | 'stop' | 'auto' | 'discharge'
+}
+
+Response:
+{
+  success: true,
+  newStatus: 'charging'
+}
+```
 
 ### Apply Strategy
-\`\`\`typescript
+```typescript
 POST /api/strategy/apply
-Body: { intervals: [...], devices: [...] }
-Response: { success: true, estimatedSavings: 12.45 }
-\`\`\`
 
-## Replacing Mock APIs
+Body:
+{
+  intervals: [
+    { start: '00:00', end: '06:00', action: 'charge' },
+    ...
+  ],
+  devices: ['ev-1', 'battery-1']
+}
 
-To connect to real APIs, update the following files:
+Response:
+{
+  success: true,
+  estimatedSavings: 12.45
+}
+```
 
-1. **Price Data**: Edit `app/api/prices/route.ts`
-   - Replace mock data with real EPEX API calls
-   - API: https://transparency.entsoe.eu/ or EPEX SPOT API
+## 🔗 Connecting to Real APIs
 
-2. **Device Control**: Edit `app/api/devices/[id]/action/route.ts`
-   - Integrate with your smart home system (e.g., Tesla API, battery APIs)
-   - Add authentication and device-specific protocols
+The app currently uses mock data. To connect to production systems:
 
-3. **Strategy Engine**: Edit `app/api/strategy/apply/route.ts`
-   - Implement actual optimization algorithms
-   - Connect to device scheduling systems
+### 1. EPEX Price Data
 
-## Environment Variables
+Edit `app/api/prices/route.ts`:
+- Replace mock data with real EPEX API calls
+- Use [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/) or EPEX SPOT API
+- Add authentication tokens
 
-\`\`\`bash
-# Add to Vercel project or .env.local
+### 2. Device Control Integration
+
+Edit `app/api/devices/[id]/action/route.ts`:
+- Integrate with your smart home system (Tesla API, battery management systems)
+- Implement device-specific protocols
+- Add authentication and security measures
+
+### 3. Strategy Engine
+
+Edit `app/api/strategy/apply/route.ts`:
+- Implement optimization algorithms (linear programming, dynamic scheduling)
+- Connect to device scheduling systems
+- Add constraint validation
+
+### Environment Variables
+
+Create a `.env.local` file:
+```bash
 EPEX_API_KEY=your_api_key
 DEVICE_API_KEY=your_device_api_key
-\`\`\`
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## PWA Configuration
+## 📱 Progressive Web App
 
-The app is configured as a PWA with:
-- Manifest file at `/public/manifest.json`
-- Service worker support (auto-generated by Next.js)
-- Mobile-optimized viewport
-- Installable on iOS and Android
+EnergyPilot is installable on mobile devices:
 
-## Key Technologies
+- **Manifest**: `/public/manifest.json`
+- **Service Worker**: Auto-generated by Next.js
+- **Offline Support**: Cached assets and data
+- **Install Prompt**: Appears on supported browsers
 
-- **Next.js 16**: App Router with React 19
-- **Tailwind CSS v4**: Utility-first styling with custom theme
-- **Recharts**: Data visualization for price charts
-- **SWR**: Real-time data fetching and caching
-- **shadcn/ui**: Accessible component library
+### Installation on Mobile
+1. Open the app in your mobile browser
+2. Tap "Add to Home Screen" (iOS) or "Install App" (Android)
+3. The app will appear as a native icon on your home screen
 
-## Mobile-First Design
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 with App Router
+- **UI**: Tailwind CSS v4 + shadcn/ui
+- **Charts**: Recharts
+- **State Management**: SWR for data fetching
+- **Language**: TypeScript
+- **Icons**: Lucide React
+
+## 📱 Mobile-First Design
+
+Built with mobile users in mind:
 
 - Bottom navigation for thumb-friendly access
 - Touch-optimized timeline editor
 - Responsive charts and cards
-- Large tap targets (min 44x44px)
-- Optimized for 360px - 428px screen widths
+- Large tap targets (minimum 44x44px)
+- Optimized for screen widths 360px - 428px
 
-## Gamification
-
-- **Community Rankings**: See how you compare to other users in your area
-- **Savings Streaks**: Track consecutive days using optimization
-- **Performance Badges**: Earn titles like "Elite Saver"
-
-## Accessibility
+## ♿ Accessibility
 
 - ARIA labels on all interactive elements
-- Keyboard navigation support
+- Full keyboard navigation support
 - Screen reader optimized
 - High contrast color themes
 - Semantic HTML structure
 
-## License
+## 🎮 Gamification Features
 
-MIT License - Built with v0 by Vercel
+- **Community Rankings**: Compare performance with users in your area
+- **Savings Streaks**: Track consecutive optimization days
+- **Performance Badges**: Earn titles like "Elite Saver" and "Green Champion"
+- **Leaderboards**: Monthly and all-time top performers
 
-## Support
+## 🧪 Testing
 
-For issues or questions, please open an issue on the repository.
+```bash
+# Run tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+
+# E2E tests
+npm run test:e2e
+```
+
+## 📦 Building for Production
+
+```bash
+# Create production build
+npm run build
+
+# Start production server
+npm start
+```
+
+## ☁️ AWS Deployment
+
+> **Note**: This section to be completed by the solution architect.
+
+### Architecture Overview
+
+*[Diagram and description of AWS infrastructure to be added]*
+
+### AWS Services Used
+
+*[List of AWS services utilized in the deployment]*
+
+- **Compute**: [e.g., EC2, ECS, Lambda, Amplify]
+- **Storage**: [e.g., S3, EFS]
+- **Database**: [e.g., RDS, DynamoDB]
+- **Networking**: [e.g., VPC, CloudFront, Route53]
+- **CI/CD**: [e.g., CodePipeline, CodeBuild, CodeDeploy]
+- **Monitoring**: [e.g., CloudWatch, X-Ray]
+- **Security**: [e.g., IAM, Secrets Manager, WAF]
+
+### Infrastructure as Code
+
+*[Details about IaC implementation]*
+
+```bash
+# Deployment commands to be added
+# e.g., terraform apply, cdk deploy, etc.
+```
+
+### Deployment Pipeline
+
+*[Description of CI/CD pipeline and deployment workflow]*
+
+1. **Source Stage**: [Details]
+2. **Build Stage**: [Details]
+3. **Test Stage**: [Details]
+4. **Deploy Stage**: [Details]
+
+### Environment Configuration
+
+*[AWS-specific environment variables and configuration]*
+
+```bash
+# AWS Environment Variables
+AWS_REGION=
+AWS_ACCOUNT_ID=
+# Additional AWS-specific configs
+```
+
+### Monitoring & Logging
+
+*[CloudWatch, logging setup, alarms, and dashboards]*
+
+### Cost Optimization
+
+*[Cost considerations and optimization strategies]*
+
+### Scaling Configuration
+
+*[Auto-scaling policies and performance tuning]*
+
+### Security Considerations
+
+*[Security groups, IAM policies, encryption, compliance]*
+
+### Disaster Recovery
+
+*[Backup strategies, recovery procedures, multi-region setup]*
+
+
+## 📞 Support
+
+For issues, questions, or feature requests, please [open an issue](https://github.com/DavitPogosian/EnergyPilot/issues) on GitHub.
+
+---
+
+Made with ⚡ for a sustainable energy future
