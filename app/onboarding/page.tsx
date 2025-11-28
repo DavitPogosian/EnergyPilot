@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Progress } from "@/components/ui/progress"
-import { Car, Battery, Sun, Zap, ChevronRight, Check, Thermometer } from "lucide-react"
+import { Car, Battery, Sun, Zap, ChevronRight, Check, Thermometer, Columns3Icon, Euro, Leaf, TrendingUp} from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 type OnboardingStep = 1 | 2 | 3
@@ -433,13 +434,13 @@ export default function OnboardingPage() {
                     {data.defaultStrategy === "custom" ? (
                       <Check className="w-5 h-5 text-primary" />
                     ) : (
-                      <Zap className="w-5 h-5 text-primary" />
+                      <Columns3Icon className="w-5 h-5 text-primary" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Custom</h4>
+                    <h4 className="font-semibold mb-1">Self Tuner</h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Full control over your energy strategy. Edit timeline blocks to create custom schedules.
+                        Full control at zero limits. Your energy - your rules. Master every watt and tune every detail.
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       <span
@@ -472,14 +473,13 @@ export default function OnboardingPage() {
                     {data.defaultStrategy === "auto" ? (
                       <Check className="w-5 h-5 text-primary" />
                     ) : (
-                      <Zap className="w-5 h-5 text-primary" />
+                      <Euro className="w-5 h-5 text-primary" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold mb-1">SmartShift AI Strategy</h4>
+                    <h4 className="font-semibold mb-1">Profit Booster</h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      AI-powered optimization that charges during low prices and discharges during peak hours for
-                      maximum savings.
+                      Turn energy into earnings - automatically. Smart energy: real money at zero effort.
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       <span
@@ -512,14 +512,13 @@ export default function OnboardingPage() {
                     {data.defaultStrategy === "eco" ? (
                       <Check className="w-5 h-5 text-success" />
                     ) : (
-                      <Sun className="w-5 h-5 text-success" />
+                      <Leaf className="w-5 h-5 text-success" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold mb-1">ECO Mode</h4>
+                    <h4 className="font-semibold mb-1">Eco Steward</h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Prioritizes renewable energy and self-consumption. Minimizes grid interaction and reduces
-                      carbon footprint.
+                        Go greener. Stay independent. Maximize your sun. Minimize your footprint.
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       <span
@@ -552,27 +551,26 @@ export default function OnboardingPage() {
                     {data.defaultStrategy === "aggressive" ? (
                       <Check className="w-5 h-5 text-warning" />
                     ) : (
-                      <Battery className="w-5 h-5 text-warning" />
+                      <TrendingUp className="w-5 h-5 text-warning" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Peak Shaving</h4>
+                    <h4 className="font-semibold mb-1">Smart Saver</h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Maximizes grid arbitrage by discharging to grid during peak hours. Best for earning from high
-                      export prices.
+                        Save more. Bother less: Let the sun work smarter for you.
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       <span
                         data-slot="badge"
                         className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-warning/10 text-warning border-warning/20"
                       >
-                        High Revenue
+                        Money Maker
                       </span>
                       <span
                         data-slot="badge"
                         className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
                       >
-                        Grid Export
+                        Green Thumb
                       </span>
                     </div>
                   </div>

@@ -7,7 +7,7 @@ import { BottomNav } from "@/components/bottom-nav"
 import { TimelineEditor } from "@/components/timeline-editor"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Zap, Sun, Battery, TrendingUp, Save, RotateCcw } from "lucide-react"
+import { Zap, Sun, Battery, TrendingUp, Save, RotateCcw, Euro, Leaf, Share2 , Columns3Icon} from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -124,26 +124,25 @@ export default function StrategyPage() {
             <CardContent>
               <Tabs value={activePreset} onValueChange={(v) => handlePresetSelect(v as typeof activePreset)}>
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="smartshift">SmartShift</TabsTrigger>
-                  <TabsTrigger value="eco">ECO</TabsTrigger>
-                  <TabsTrigger value="peak-avoid">Peak Avoid</TabsTrigger>
-                  <TabsTrigger value="custom">Custom</TabsTrigger>
+                  <TabsTrigger value="smartshift">Profit Booster</TabsTrigger>
+                  <TabsTrigger value="eco">Eco Steward</TabsTrigger>
+                  <TabsTrigger value="peak-avoid">Smart Saver</TabsTrigger>
+                  <TabsTrigger value="custom">Self Tuner</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="smartshift" className="space-y-3 mt-4">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Zap className="w-5 h-5 text-primary" />
+                      <Euro className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">SmartShift AI Strategy</h4>
+                      <h4 className="font-semibold mb-1">Profit Booster</h4>
                       <p className="text-sm text-muted-foreground mb-2">
-                        AI-powered optimization that charges during low prices and discharges during peak hours for
-                        maximum savings.
+                        An AI-powered expert that slashes your bills and grows your money while you enjoy your life
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                          Best Savings
+                          Money maker
                         </Badge>
                         <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
                           Recommended
@@ -156,13 +155,12 @@ export default function StrategyPage() {
                 <TabsContent value="eco" className="space-y-3 mt-4">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
                     <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
-                      <Sun className="w-5 h-5 text-success" />
+                      <Leaf className="w-5 h-5 text-success" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">ECO Mode</h4>
+                      <h4 className="font-semibold mb-1">Eco Steward</h4>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Prioritizes renewable energy and self-consumption. Minimizes grid interaction and reduces carbon
-                        footprint.
+                        Go greener. Stay independent. Maximize your sun. Minimize your footprint.
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <Badge variant="outline" className="bg-success/10 text-success border-success/20">
@@ -182,17 +180,16 @@ export default function StrategyPage() {
                       <TrendingUp className="w-5 h-5 text-warning" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">Peak Shaving</h4>
+                      <h4 className="font-semibold mb-1">Smart Saver</h4>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Maximizes grid arbitrage by discharging to grid during peak hours. Best for earning from high
-                        export prices.
+                        Save more. Bother less: Let the sun work smarter for you.
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">
-                          High Revenue
+                          Money Maker
                         </Badge>
                         <Badge variant="outline" className="bg-muted text-muted-foreground">
-                          Grid Export
+                          Green Thumb
                         </Badge>
                       </div>
                     </div>
@@ -200,6 +197,24 @@ export default function StrategyPage() {
                 </TabsContent>
 
                 <TabsContent value="custom" className="space-y-3 mt-4">
+                                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/5 border border-black/60">
+                    <div className="w-10 h-10 rounded-lg bg-muted/10 flex items-center justify-center flex-shrink-0">
+                      <Columns3Icon className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold mb-1">Self Tuner</h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Full control at zero limits. Your energy - your rules. Master every watt and tune every detail.                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge variant="outline" className="bg-muted/10 text-muted-foreground border-black/60">
+                          Rebel
+                        </Badge>
+                        <Badge variant="outline" className="bg-muted text-muted-foreground">
+                          Lone Wolf
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
                   <div className="p-3 rounded-lg bg-muted/50 border border-dashed border-border">
                     <p className="text-sm text-muted-foreground text-center">
                       Use the timeline editor below to create your own custom strategy
@@ -233,10 +248,10 @@ export default function StrategyPage() {
                     <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                          {interval.action === "charge_from_grid" && <Battery className="w-4 h-4 text-primary" />}
-                          {interval.action === "discharge_to_grid" && <TrendingUp className="w-4 h-4 text-warning" />}
-                          {interval.action === "self_consumption" && <Sun className="w-4 h-4 text-success" />}
-                          {interval.action === "idle" && <Zap className="w-4 h-4 text-muted-foreground" />}
+                          {interval.action === "charge_from_grid" && <TrendingUp className="w-4 h-4 text-primary" />}
+                          {interval.action === "discharge_to_grid" && <Sun className="w-4 h-4 text-warning" />}
+                          {interval.action === "self_consumption" && <Battery className="w-4 h-4 text-success" />}
+                          {interval.action === "idle" && <Share2 className="w-4 h-4 text-muted-foreground" />}
                         </div>
                         <div>
                           <p className="font-medium capitalize">{interval.action.replace(/_/g, " ")}</p>

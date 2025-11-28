@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Battery, TrendingUp, Sun, Zap } from "lucide-react"
+import { Battery, TrendingUp, Sun, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { StrategyInterval } from "@/lib/types"
 
@@ -19,10 +19,10 @@ const timeSlots = Array.from({ length: 96 }, (_, i) => {
 })
 
 const actions = [
-  { value: "charge_from_grid", label: "Consume from Grid", icon: Battery, color: "bg-red-500" },
-  { value: "discharge_to_grid", label: "Inject", icon: TrendingUp, color: "bg-green-500" },
-  { value: "self_consumption", label: "Self Consume", icon: Sun, color: "bg-blue-500" },
-  { value: "idle", label: "Share", icon: Zap, color: "bg-orange-500" },
+  { value: "charge_from_grid", label: "Consume from Grid", icon: TrendingUp, color: "bg-red-500" },
+  { value: "discharge_to_grid", label: "Inject", icon: Sun, color: "bg-green-500" },
+  { value: "self_consumption", label: "Self Consume", icon: Battery, color: "bg-blue-500" },
+  { value: "idle", label: "Share", icon: Share2, color: "bg-orange-500" },
 ] as const
 
 export function TimelineEditor({ intervals, onChange, readOnly = false }: TimelineEditorProps) {
@@ -155,7 +155,7 @@ export function TimelineEditor({ intervals, onChange, readOnly = false }: Timeli
       <div className="p-3 rounded-lg bg-muted/50 border border-dashed border-border">
         <p className="text-xs text-muted-foreground text-center">
           {readOnly
-            ? "This timeline is view-only. Switch to Custom strategy to edit the schedule."
+            ? "This timeline is view-only. Switch to Self Tuner strategy to edit the schedule."
             : "Click and drag across time slots to create intervals, then they will appear in the schedule below"}
         </p>
       </div>
