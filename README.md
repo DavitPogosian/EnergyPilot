@@ -10,6 +10,8 @@ A mobile-first Progressive Web App that helps residential customers in Luxembour
 
 EnergyPilot empowers homeowners to take control of their energy usage by automatically scheduling smart devices (EVs, batteries, solar) to charge during low-price periods and discharge during peak-price times. Save money, reduce carbon emissions, and maximize your renewable energy investment.
 
+**This project was developed during the [Watt the Hack Hackathon]
+
 ## ✨ Key Features
 
 ### 📊 Real-Time Price Monitoring
@@ -22,7 +24,6 @@ Manage multiple energy devices from one interface:
 - **Electric Vehicles (EV)**: Automated charging schedules
 - **Home Battery Storage**: Smart charge/discharge cycles
 - **Solar Panels**: Monitor production and optimize self-consumption
-- **Power Purchase Agreements (PPA)**: Track contract performance
 
 ### 🧠 AI-Powered Strategies
 
@@ -73,7 +74,7 @@ npm run dev
 
 Complete the 3-step onboarding process:
 
-1. **Configure Devices**: Add your EV, battery, solar panels, or PPA
+1. **Configure Devices**: Add your EV, battery, or solar panels
 2. **Set Preferences**: Define minimum battery levels and do-not-disturb hours
 3. **Choose Strategy**: Select your default optimization mode
 
@@ -263,7 +264,6 @@ Built with mobile users in mind:
 - **Performance Badges**: Earn titles like "Elite Saver" and "Green Champion"
 - **Leaderboards**: Monthly and all-time top performers
 
-
 ## 📦 Building for Production
 
 ```bash
@@ -276,57 +276,184 @@ npm start
 
 ## ☁️ AWS Deployment
 
-> **Note**: This section to be completed by the solution architect.
-
 ### Architecture Overview
 
-*[Diagram and description of AWS infrastructure to be added]*
+EnergyPilot leverages AWS cloud infrastructure for scalable, secure, and automated deployment. The architecture consists of a serverless frontend, managed database, and Lambda-based computation engine.
+
+<div align="center">
+  <img src="./diagram.jpg" alt="Watt the Hack Hackathon" width="100%">
+</div>
 
 ### AWS Services Used
 
-*[List of AWS services utilized in the deployment]*
+- **Frontend Hosting**: AWS Amplify
+  - Automatic deployment from GitHub main branch
+  - CDN distribution for global performance
+  - SSL/TLS certificate management
 
-- **Compute**: [e.g., EC2, ECS, Lambda, Amplify]
-- **Storage**: [e.g., S3, EFS]
-- **Database**: [e.g., RDS, DynamoDB]
-- **Networking**: [e.g., VPC, CloudFront, Route53]
-- **CI/CD**: [e.g., CodePipeline, CodeBuild, CodeDeploy]
-- **Monitoring**: [e.g., CloudWatch, X-Ray]
-- **Security**: [e.g., IAM, Secrets Manager, WAF]
+- **Compute**: AWS Lambda
+  - Dockerized Lambda functions for cross-platform compatibility
+  - Optimization and savings computation engine
+  - Direct RDS access via security group configuration
 
-### Infrastructure as Code
+- **Storage**: Amazon S3
+  - Anonymized load profile datasets
+  - Static asset storage
 
-*[Details about IaC implementation]*
+- **Database**: Amazon RDS (PostgreSQL)
+  - User load profiles
+  - Day-ahead electricity prices from ENTSO-E platform
+  - Managed backups and scaling
 
-```bash
-# Deployment commands to be added
-# e.g., terraform apply, cdk deploy, etc.
+- **API Management**: Amazon API Gateway
+  - RESTful API endpoints
+  - Request/response transformation
+  - API throttling and caching
+
+- **Security**: AWS Secrets Manager
+  - Secure database credential storage
+  - Automatic credential rotation
+
+### Frontend Deployment
+
+The frontend is built with Node.js (Next.js) and was initially created using v0 AI assistant, then customized for EnergyPilot's specific requirements.
+
+**Continuous Deployment Pipeline:**
+1. Code pushed to GitHub main branch
+2. AWS Amplify automatically detects changes
+3. Build process executes (`npm install` → `npm run build`)
+4. New version deployed to production
+5. CDN cache invalidated for instant updates
+
+### Backend Architecture
+
+#### Lambda Functions
+
+The core computation logic is implemented in `scripts/lambda_function.py` and deployed as Docker containers to ensure consistency across development environments.
+
+**Key Functionalities:**
+- Daily value computation based on load profile and day-ahead prices
+- Monthly grid income estimation
+- Advanced savings estimation across multiple strategies
+
+#### API Gateway Endpoints
+
+```typescript
+// Daily Value Computation
+POST /api/compute/daily-value
+Body: { loadProfile: [...], prices: [...] }
+
+// Monthly Income Estimation
+GET /api/compute/monthly-income?profile_id={id}
+
+// Savings Estimation
+POST /api/compute/savings
+Body: { strategy: 'smartshift' | 'eco' | 'peak_shaving', intervals: [...], devices: [...] }
 ```
 
-### Deployment Pipeline
+#### Database Schema
 
-*[Description of CI/CD pipeline and deployment workflow]*
+The PostgreSQL database in RDS contains:
+- **Load Profiles**: Selected from anonymized S3 datasets
+- **Day-Ahead Prices**: Historical and forecasted ENTSO-E data
+- **User Preferences**: Device configurations and strategy settings
+- **Performance Metrics**: Savings tracking and analytics
 
-1. **Source Stage**: [Details]
-2. **Build Stage**: [Details]
-3. **Test Stage**: [Details]
-4. **Deploy Stage**: [Details]
+### Savings Estimation Strategies
+
+The Lambda function computes savings across multiple strategies. Users can select from three optimization strategies in the UI, with a fourth baseline used for comparison:
+
+#### 1. No Battery (Baseline for Comparison)
+- Uses solar production first, then purchases from grid
+- Excess solar energy sold at 70% of purchase price
+- Used as baseline to calculate savings from other strategies
+- **Note**: Not a user-selectable strategy in the UI
+
+#### 2. SmartShift (AI)
+User-defined schedule with intelligent battery management:
+- **charge_from_grid**: Charge battery from grid and solar
+- **self_consumption**: Prioritize solar → battery → grid
+- **discharge_to_grid**: Sell battery energy back to grid
+- **idle**: Use solar and grid as needed (no battery action)
+- Automated optimization for maximum savings
+
+#### 3. ECO Mode
+Green energy prioritization:
+- Only charges battery from excess solar production
+- Never charges from grid
+- Always prioritizes renewable energy sources
+- Maximizes self-consumption
+
+#### 4. Peak Shaving
+Grid arbitrage optimization:
+- Charges battery during low-price periods
+- Discharges during expensive hours (peak prices)
+- Maximizes revenue from price differentials
+- Interval-based charging/discharging schedule
+
+#### Custom Strategy
+In addition to the above presets, users can create their own custom charging/discharging schedules using the timeline editor in the UI. Custom strategies are evaluated using the SmartShift computation logic with user-defined intervals.
+
+### Lambda Deployment
+
+Lambda functions are containerized using Docker for cross-platform compatibility:
+
+```bash
+# Build Docker image
+docker build -t energypilot-lambda .
+
+# Tag for ECR
+docker tag energypilot-lambda:latest {account-id}.dkr.ecr.{region}.amazonaws.com/energypilot-lambda:latest
+
+# Push to ECR
+docker push {account-id}.dkr.ecr.{region}.amazonaws.com/energypilot-lambda:latest
+
+# Deploy via AWS CLI or Console
+aws lambda update-function-code \
+  --function-name energypilot-compute \
+  --image-uri {account-id}.dkr.ecr.{region}.amazonaws.com/energypilot-lambda:latest
+```
+
+### Security Configuration
+
+- **RDS Security Groups**: Lambda functions configured with VPC access to RDS
+- **Secrets Manager Integration**: Database credentials retrieved at runtime
+- **IAM Roles**: Least-privilege access policies for all services
+- **API Gateway Authentication**: API key and IAM-based authorization
+
+### Data Flow
+
+1. **Frontend Request**: User interacts with Next.js application
+2. **API Gateway**: Routes request to appropriate Lambda function
+3. **Lambda Processing**: 
+   - Retrieves load profile from RDS
+   - Fetches day-ahead prices from database
+   - Accesses anonymized datasets from S3 if needed
+   - Computes optimization based on selected strategy
+4. **Response**: Results returned to frontend for visualization
 
 ### Environment Configuration
 
-*[AWS-specific environment variables and configuration]*
+Key environment variables for Lambda functions:
 
 ```bash
-# AWS Environment Variables
-AWS_REGION=
-AWS_ACCOUNT_ID=
-# Additional AWS-specific configs
+# Database Connection
+DB_HOST=your-rds-endpoint.rds.amazonaws.com
+DB_NAME=energypilot
+DB_SECRET_ARN=arn:aws:secretsmanager:region:account:secret:db-credentials
+
+# API Configuration
+API_GATEWAY_URL=https://api-id.execute-api.region.amazonaws.com/prod
+
+# S3 Bucket
+LOAD_PROFILES_BUCKET=energypilot-load-profiles
+
+# AWS Region
+AWS_REGION=eu-west-1
 ```
 
-## 📞 Support
-
-For issues, questions, or feature requests, please [open an issue](https://github.com/DavitPogosian/EnergyPilot/issues) on GitHub.
+*[Security groups, IAM policies, encryption, compliance]*
 
 ---
 
-Built with ⚡ for the Watt the Hackathon
+**Built with ⚡ for the Watt the Hackathon**
