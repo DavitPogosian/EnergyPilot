@@ -259,18 +259,6 @@ Built with mobile users in mind:
 - **Performance Badges**: Earn titles like "Elite Saver" and "Green Champion"
 - **Leaderboards**: Monthly and all-time top performers
 
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# Run with coverage
-npm test -- --coverage
-
-# E2E tests
-npm run test:e2e
-```
 
 ## 📦 Building for Production
 
@@ -331,31 +319,10 @@ AWS_ACCOUNT_ID=
 # Additional AWS-specific configs
 ```
 
-### Monitoring & Logging
-
-*[CloudWatch, logging setup, alarms, and dashboards]*
-
-### Cost Optimization
-
-*[Cost considerations and optimization strategies]*
-
-### Scaling Configuration
-
-*[Auto-scaling policies and performance tuning]*
-
-### Security Considerations
-
-*[Security groups, IAM policies, encryption, compliance]*
-
-### Disaster Recovery
-
-*[Backup strategies, recovery procedures, multi-region setup]*
-
-
 ## 📞 Support
 
 For issues, questions, or feature requests, please [open an issue](https://github.com/DavitPogosian/EnergyPilot/issues) on GitHub.
 
 ---
 
-Made with ⚡ for a sustainable energy future
+Built with ⚡ for the Watt the Hackathon
