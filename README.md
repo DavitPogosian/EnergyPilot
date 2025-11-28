@@ -280,7 +280,7 @@ npm start
 
 EnergyPilot leverages AWS cloud infrastructure for scalable, secure, and automated deployment. The architecture consists of a serverless frontend, managed database, and Lambda-based computation engine.
 
-<div align="center">
+<div align="center" style="background-color: white; padding: 16px;">
   <img src="./diagram.png" alt="Watt the Hack Hackathon" width="100%">
 </div>
 
