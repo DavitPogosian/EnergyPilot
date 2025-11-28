@@ -381,192 +381,183 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            {step === 3 &&
-              (() => {
-                const selectedStrategy = determineStrategy()
-                // Auto-select the strategy when entering step 3
-                if (data.defaultStrategy !== selectedStrategy) {
-                  setData({ ...data, defaultStrategy: selectedStrategy })
-                }
+            {step === 3 && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold mb-2 text-balance">Your recommended strategy</h2>
+                  <p className="text-muted-foreground text-balance">
+                    Based on your preferences, we selected the best strategy for you
+                  </p>
+                </div>
 
-                return (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold mb-2 text-balance">Your recommended strategy</h2>
-                      <p className="text-muted-foreground text-balance">
-                        Based on your preferences, we selected the best strategy for you
-                      </p>
-                    </div>
-
-                    {/* Custom Strategy */}
-                    <div
-                      className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
-                        data.defaultStrategy === "custom"
-                          ? "bg-primary/5 border-primary/20"
-                          : "bg-muted/30 border-border opacity-50",
-                      )}
-                      onClick={() => setData({ ...data, defaultStrategy: "custom" })}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        {data.defaultStrategy === "custom" ? (
-                          <Check className="w-5 h-5 text-primary" />
-                        ) : (
-                          <Zap className="w-5 h-5 text-primary" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold mb-1">Custom</h4>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Full control over your energy strategy. Edit timeline blocks to create custom schedules.
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
-                          >
-                            Full Control
-                          </span>
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
-                          >
-                            Advanced
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* SmartShift AI Strategy */}
-                    <div
-                      className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
-                        data.defaultStrategy === "auto"
-                          ? "bg-primary/5 border-primary/20"
-                          : "bg-muted/30 border-border opacity-50",
-                      )}
-                      onClick={() => setData({ ...data, defaultStrategy: "auto" })}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        {data.defaultStrategy === "auto" ? (
-                          <Check className="w-5 h-5 text-primary" />
-                        ) : (
-                          <Zap className="w-5 h-5 text-primary" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold mb-1">SmartShift AI Strategy</h4>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          AI-powered optimization that charges during low prices and discharges during peak hours for
-                          maximum savings.
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
-                          >
-                            Best Savings
-                          </span>
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
-                          >
-                            Recommended
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ECO Mode */}
-                    <div
-                      className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
-                        data.defaultStrategy === "eco"
-                          ? "bg-success/5 border-success/20"
-                          : "bg-muted/30 border-border opacity-50",
-                      )}
-                      onClick={() => setData({ ...data, defaultStrategy: "eco" })}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
-                        {data.defaultStrategy === "eco" ? (
-                          <Check className="w-5 h-5 text-success" />
-                        ) : (
-                          <Sun className="w-5 h-5 text-success" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold mb-1">ECO Mode</h4>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Prioritizes renewable energy and self-consumption. Minimizes grid interaction and reduces
-                          carbon footprint.
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
-                          >
-                            Low Carbon
-                          </span>
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
-                          >
-                            Self Sufficient
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Peak Shaving */}
-                    <div
-                      className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
-                        data.defaultStrategy === "aggressive"
-                          ? "bg-warning/5 border-warning/20"
-                          : "bg-muted/30 border-border opacity-50",
-                      )}
-                      onClick={() => setData({ ...data, defaultStrategy: "aggressive" })}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
-                        {data.defaultStrategy === "aggressive" ? (
-                          <Check className="w-5 h-5 text-warning" />
-                        ) : (
-                          <Battery className="w-5 h-5 text-warning" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold mb-1">Peak Shaving</h4>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Maximizes grid arbitrage by discharging to grid during peak hours. Best for earning from high
-                          export prices.
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-warning/10 text-warning border-warning/20"
-                          >
-                            High Revenue
-                          </span>
-                          <span
-                            data-slot="badge"
-                            className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
-                          >
-                            Grid Export
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Card className="bg-muted/50 border-dashed">
-                      <CardContent className="p-4">
-                        <p className="text-sm text-muted-foreground text-center">
-                          You can always change your strategy later in the Strategy Editor
-                        </p>
-                      </CardContent>
-                    </Card>
+                {/* Custom Strategy */}
+                <div
+                  className={cn(
+                    "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                    data.defaultStrategy === "custom"
+                      ? "bg-primary/5 border-primary/20"
+                      : "bg-muted/30 border-border opacity-50",
+                  )}
+                  onClick={() => setData({ ...data, defaultStrategy: "custom" })}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    {data.defaultStrategy === "custom" ? (
+                      <Check className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Zap className="w-5 h-5 text-primary" />
+                    )}
                   </div>
-                )
-              })()}
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Custom</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Full control over your energy strategy. Edit timeline blocks to create custom schedules.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
+                      >
+                        Full Control
+                      </span>
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                      >
+                        Advanced
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SmartShift AI Strategy */}
+                <div
+                  className={cn(
+                    "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                    data.defaultStrategy === "auto"
+                      ? "bg-primary/5 border-primary/20"
+                      : "bg-muted/30 border-border opacity-50",
+                  )}
+                  onClick={() => setData({ ...data, defaultStrategy: "auto" })}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    {data.defaultStrategy === "auto" ? (
+                      <Check className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Zap className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">SmartShift AI Strategy</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      AI-powered optimization that charges during low prices and discharges during peak hours for
+                      maximum savings.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
+                      >
+                        Best Savings
+                      </span>
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-primary/10 text-primary border-primary/20"
+                      >
+                        Recommended
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ECO Mode */}
+                <div
+                  className={cn(
+                    "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                    data.defaultStrategy === "eco"
+                      ? "bg-success/5 border-success/20"
+                      : "bg-muted/30 border-border opacity-50",
+                  )}
+                  onClick={() => setData({ ...data, defaultStrategy: "eco" })}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
+                    {data.defaultStrategy === "eco" ? (
+                      <Check className="w-5 h-5 text-success" />
+                    ) : (
+                      <Sun className="w-5 h-5 text-success" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">ECO Mode</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Prioritizes renewable energy and self-consumption. Minimizes grid interaction and reduces
+                      carbon footprint.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-success/10 text-success border-success/20"
+                      >
+                        Low Carbon
+                      </span>
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                      >
+                        Self Sufficient
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Peak Shaving */}
+                <div
+                  className={cn(
+                    "flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                    data.defaultStrategy === "aggressive"
+                      ? "bg-warning/5 border-warning/20"
+                      : "bg-muted/30 border-border opacity-50",
+                  )}
+                  onClick={() => setData({ ...data, defaultStrategy: "aggressive" })}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+                    {data.defaultStrategy === "aggressive" ? (
+                      <Check className="w-5 h-5 text-warning" />
+                    ) : (
+                      <Battery className="w-5 h-5 text-warning" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Peak Shaving</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Maximizes grid arbitrage by discharging to grid during peak hours. Best for earning from high
+                      export prices.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-warning/10 text-warning border-warning/20"
+                      >
+                        High Revenue
+                      </span>
+                      <span
+                        data-slot="badge"
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 bg-muted text-muted-foreground"
+                      >
+                        Grid Export
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <Card className="bg-muted/50 border-dashed">
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground text-center">
+                      You can always change your strategy later in the Strategy Editor
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
 
@@ -580,7 +571,16 @@ export default function OnboardingPage() {
                 </Button>
               )}
               {step < 3 ? (
-                <Button onClick={() => setStep((step + 1) as OnboardingStep)} className="flex-1">
+                <Button
+                  onClick={() => {
+                    if (step === 2) {
+                      const strategy = determineStrategy()
+                      setData({ ...data, defaultStrategy: strategy })
+                    }
+                    setStep((step + 1) as OnboardingStep)
+                  }}
+                  className="flex-1"
+                >
                   Continue
                   <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>

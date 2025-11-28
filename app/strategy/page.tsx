@@ -18,6 +18,22 @@ import {
 } from "@/components/ui/dialog"
 import type { StrategyInterval } from "@/lib/types"
 
+const PRESET_INTERVALS: Record<"smartshift" | "eco" | "peak-avoid" | "custom", StrategyInterval[]> = {
+  smartshift: [
+    { start: "02:00", end: "06:00", action: "charge_from_grid" },
+    { start: "06:00", end: "17:00", action: "self_consumption" },
+    { start: "17:00", end: "21:00", action: "discharge_to_grid" },
+    { start: "21:00", end: "02:00", action: "idle" },
+  ],
+  eco: [{ start: "00:00", end: "24:00", action: "self_consumption" }],
+  "peak-avoid": [
+    { start: "00:00", end: "17:00", action: "charge_from_grid" },
+    { start: "17:00", end: "21:00", action: "discharge_to_grid" },
+    { start: "21:00", end: "24:00", action: "idle" },
+  ],
+  custom: [],
+}
+
 export default function StrategyPage() {
   const [activePreset, setActivePreset] = useState<"smartshift" | "eco" | "peak-avoid" | "custom">("smartshift")
   const [intervals, setIntervals] = useState<StrategyInterval[]>([])
@@ -27,18 +43,23 @@ export default function StrategyPage() {
 
   useEffect(() => {
     const config = localStorage.getItem("energypilot_config")
+    let targetPreset: "smartshift" | "eco" | "peak-avoid" | "custom" = "smartshift"
+
     if (config) {
       const parsed = JSON.parse(config)
       if (parsed.defaultStrategy === "custom") {
-        setActivePreset("custom")
+        targetPreset = "custom"
       } else if (parsed.defaultStrategy === "auto") {
-        setActivePreset("smartshift")
+        targetPreset = "smartshift"
       } else if (parsed.defaultStrategy === "eco") {
-        setActivePreset("eco")
+        targetPreset = "eco"
       } else if (parsed.defaultStrategy === "aggressive") {
-        setActivePreset("peak-avoid")
+        targetPreset = "peak-avoid"
       }
     }
+
+    setActivePreset(targetPreset)
+    setIntervals(PRESET_INTERVALS[targetPreset])
   }, [])
 
   const handleApplyStrategy = async () => {
@@ -64,25 +85,7 @@ export default function StrategyPage() {
 
   const handlePresetSelect = (preset: typeof activePreset) => {
     setActivePreset(preset)
-
-    // Generate preset intervals
-    const presetIntervals: Record<typeof activePreset, StrategyInterval[]> = {
-      smartshift: [
-        { start: "02:00", end: "06:00", action: "charge_from_grid" },
-        { start: "06:00", end: "17:00", action: "self_consumption" },
-        { start: "17:00", end: "21:00", action: "discharge_to_grid" },
-        { start: "21:00", end: "02:00", action: "idle" },
-      ],
-      eco: [{ start: "00:00", end: "24:00", action: "self_consumption" }],
-      "peak-avoid": [
-        { start: "00:00", end: "17:00", action: "charge_from_grid" },
-        { start: "17:00", end: "21:00", action: "discharge_to_grid" },
-        { start: "21:00", end: "24:00", action: "idle" },
-      ],
-      custom: [],
-    }
-
-    setIntervals(presetIntervals[preset])
+    setIntervals(PRESET_INTERVALS[preset])
   }
 
   const handleReset = () => {
