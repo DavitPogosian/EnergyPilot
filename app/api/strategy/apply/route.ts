@@ -8,7 +8,12 @@ export async function POST(request: NextRequest) {
   const { intervals, devices } = body
 
   try {
-    const response = await fetch(INSIGHTS_ENDPOINT, { cache: "no-store" })
+    const response = await fetch(INSIGHTS_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ intervals, devices }),
+      cache: "no-store",
+    })
     if (!response.ok) {
       throw new Error(`Insights endpoint failed: ${response.status}`)
     }
